@@ -12,8 +12,9 @@ import scala.collection.parallel.CollectionConverters._
 import org.scalameter.measure
 import org.scalameter._
 import scala.util.Random
+import java.util.concurrent._
 
-object Taller4{
+object Taller4 {
   // Definir el alfabeto
   val alfabeto = Seq('a', 'c', 'g', 't')
   // Definir el tipo Oraculo como una función
@@ -106,24 +107,54 @@ object Taller4{
   }
 
 
-  //metodo para reconstruir cadena turbo
+  //Metodo para ReconstruirCadenaTurbo
+  def ReconstruirCadenaTurbo(n: Int, o: Oraculo): Seq[Char] = {
+    def buscarCadena(secuencia: Seq[Seq[Char]]): Seq[Char] =
+      secuencia.collectFirst { // Devolver la primera secuencia que cumpla con el oráculo
+        case actual if o(actual) => actual
+      }.getOrElse(Seq.empty)
 
+    def Auxiliar(k: Int, secuencia: Seq[Seq[Char]]): Seq[Seq[Char]] =
+      if (k >= n) secuencia // Si k es mayor o igual que n, devolvemos la secuencia
+      else Auxiliar(k + 1, secuencia.flatMap(c => alfabeto.map(c :+ _))) // Si k es menor que n, añadimos cada letra del alfabeto a la secuencia y llamamos recursivamente a la función
 
+    buscarCadena(Auxiliar(1, alfabeto.map(Seq(_))))
+  }
+
+  //metodo para reconstruir cadena turbo parallismo usando common parallel
+  def ReconstruirCadenaTurboPar(umbral: Int)(n: Int, o: Oraculo): Seq[Char] = {
+    def buscarCadena(secuencia: Seq[Seq[Char]]): Seq[Char] =
+      secuencia.collectFirst {
+        case actual if o(actual) => actual
+      }.getOrElse(Seq.empty)
+
+    def Auxiliar(k: Int, secuencia: Seq[Seq[Char]]): Seq[Seq[Char]] =
+      if (k >= n) secuencia
+      else {
+        val (tarea1, tarea2) = parallel(
+          secuencia.flatMap(c => alfabeto.map(c :+ _)),
+          secuencia.flatMap(c => alfabeto.map(c :+ _))
+        )
+        Auxiliar(k + 1, tarea1 ++ tarea2)
+      }
+
+    buscarCadena(Auxiliar(1, alfabeto.map(Seq(_))))
+  }
 
 
   def pruebas(): Unit = {
-    val tamanios = Seq(2, 4, 8, 16) // Diferentes tamaños de cadena para probar
+    val tamanios = Seq(4,16) // Diferentes tamaños de cadena para probar
 
     // Imprimir encabezado de la tabla
-    println(f"| Tamaño | IngenuoPar (ms) |(ms)Oráculo |")
+    println(f"| Tamaño | Turbo(ms) |(ms)Oráculo |")
     for (tamano <- tamanios) {
       val oraculo = generarOraculo(tamano)
 
       // Medir tiempo de ejecución para reconstruirCadenaIngenuo
       val tiempoIngenuo = withWarmer(new Warmer.Default) measure {
-        val resultadoIngenuo = reconstruirCadenaIngenuo(tamano, (s: Seq[Char]) => s == oraculo)
+        val resultadoIngenuo = ReconstruirCadenaTurboPar(4)(tamano, (s: Seq[Char]) => s == oraculo)
       }
-      val res = reconstruirCadenaIngenuo(tamano, (s: Seq[Char]) => s == oraculo)
+      val res = ReconstruirCadenaTurboPar(4)(tamano, (s: Seq[Char]) => s == oraculo)
 
 
       // Imprimir resultados en formato de tabla
@@ -152,13 +183,13 @@ object Taller4{
 
   //comparar secuenciales vs paralelos
   def pruebasCompararAlgoritmos(): Unit = {
-    val tamanios = Seq(4, 16, 32, 64) // Diferentes tamaños de cadena para probar
+    val tamanios = Seq(2,4,8) // Diferentes tamaños de cadena para probar
     //imprimir encabezado de la tabla
-    println(f"| Tamaño | Mejorado (ms) | Mejorado Parallel (ms) | Aceleracion (ms) |Oráculo |")
+    println(f"| Tamaño | Turbo (ms) | Turbo Parallel (ms) | Aceleracion (ms) |Oráculo |")
     //usar metodo comparar algoritmos para comparar ingenuo vs parallel
     for (tamano <- tamanios) {
       val oraculo = generarOraculo(tamano)
-      val (tiempoSecuencial, tiempoParalelo, aceleracion) = compararAlgoritmos(ReconstruirCadenaMejorado, ReconstruirCadenaMejoradoPar(4))(tamano, (s: Seq[Char]) => s == oraculo)
+      val (tiempoSecuencial, tiempoParalelo, aceleracion) = compararAlgoritmos(ReconstruirCadenaTurbo, ReconstruirCadenaTurboPar(4))(tamano, (s: Seq[Char]) => s == oraculo)
       println(f"| $tamano%6d | ${tiempoSecuencial}%12.4f | ${tiempoParalelo}%14.4f | ${aceleracion}%14.4f |  ${oraculo}%10s |")
     }
   }
@@ -167,7 +198,8 @@ object Taller4{
   def main(args: Array[String]): Unit = {
 
     println("Pruebas comparar algoritmos")
-    //pruebas()
+    pruebasCompararAlgoritmos()
+
 
 
 
