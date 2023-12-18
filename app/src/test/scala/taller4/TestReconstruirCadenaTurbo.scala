@@ -4,6 +4,7 @@ import org.junit.runner.RunWith
 import org.scalatestplus.junit.JUnitRunner
 import scala.collection.immutable.Seq
 import taller4.Taller4._
+@RunWith(classOf[JUnitRunner])
 class TestReconstruirCadenaTurbo extends AnyFunSuite {
   //crear test para hacer preguntas al oraculo
   test("TestReconstruirCadenaTurbo") {
