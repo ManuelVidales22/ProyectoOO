@@ -12,11 +12,11 @@ Este proyecto aborda el desafío de la reconstrucción de secuencias de ADN, tam
 1.2. ReconstruirCadenaIngenuo:
 Esta función reconstruye una cadena de ADN utilizando un enfoque ingenuo, generando todas las posibles secuencias y buscando aquella que cumple con la condición del oráculo.
 
-##2. Acelerando los Datos con Paralelismo de Tareas y de Datos
+## 2. Acelerando los Datos con Paralelismo de Tareas y de Datos
 2.1. ReconstruirCadenaIngenuoParallel:
 Esta función realiza la reconstrucción de una cadena de manera paralela para tamaños mayores o iguales al umbral especificado y de manera secuencial para tamaños menores al umbral.
 
-##Tabla Comparativa
+## Tabla Comparativa
 3.1. Tabla de Comparación del Método Ingenuo (Versión Secuencial y Paralela)
 | Tamaño | Ingenuo (ms) | IngenuoPar (ms) | Aceleración (ms) |
 |--------|--------------|-----------------|-------------------|
