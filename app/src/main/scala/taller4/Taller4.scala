@@ -13,7 +13,12 @@ import org.scalameter.measure
 import org.scalameter._
 import scala.util.Random
 import java.util.concurrent._
+/*Autores:
+Alejandro Marin Hoyos 2259353-3743
+Yessica Fernanda Villa Nuñez 2266301-3743
+Manuel Antonio Vidales Duran  2155481-3743
 
+ */
 object Taller4 {
   // Definir el alfabeto
   val alfabeto = Seq('a', 'c', 'g', 't')
@@ -143,7 +148,7 @@ object Taller4 {
 
 
   def pruebas(): Unit = {
-    val tamanios = Seq(4,16) // Diferentes tamaños de cadena para probar
+    val tamanios = Seq(4, 16) // Diferentes tamaños de cadena para probar
 
     // Imprimir encabezado de la tabla
     println(f"| Tamaño | Turbo(ms) |(ms)Oráculo |")
@@ -183,13 +188,13 @@ object Taller4 {
 
   //comparar secuenciales vs paralelos
   def pruebasCompararAlgoritmos(): Unit = {
-    val tamanios = Seq(2,4,8) // Diferentes tamaños de cadena para probar
+    val tamanios = Seq(2, 4, 8, 10, 12) // Diferentes tamaños de cadena para probar
     //imprimir encabezado de la tabla
     println(f"| Tamaño | Turbo (ms) | Turbo Parallel (ms) | Aceleracion (ms) |Oráculo |")
     //usar metodo comparar algoritmos para comparar ingenuo vs parallel
     for (tamano <- tamanios) {
       val oraculo = generarOraculo(tamano)
-      val (tiempoSecuencial, tiempoParalelo, aceleracion) = compararAlgoritmos(ReconstruirCadenaTurbo, ReconstruirCadenaTurboPar(4))(tamano, (s: Seq[Char]) => s == oraculo)
+      val (tiempoSecuencial, tiempoParalelo, aceleracion) = compararAlgoritmos(reconstruirCadenaIngenuo, reconstruirCadenaIngenuoParallel(4))(tamano, (s: Seq[Char]) => s == oraculo)
       println(f"| $tamano%6d | ${tiempoSecuencial}%12.4f | ${tiempoParalelo}%14.4f | ${aceleracion}%14.4f |  ${oraculo}%10s |")
     }
   }
@@ -201,9 +206,9 @@ object Taller4 {
     pruebasCompararAlgoritmos()
 
 
-
-
   }
+
+
 
 
 
