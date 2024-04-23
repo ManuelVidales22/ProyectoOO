@@ -1,4 +1,6 @@
 # Proyecto Oraculo  - Fundamentos de programación funcional y concurrente
+--
+
 ## Autores
 
 - Alejandro Marin Hoyos (ID: 2259353-3743)
